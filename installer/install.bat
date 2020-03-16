@@ -1,3 +1,5 @@
+ECHO OFF
+
 SET ytd_link=https://github.com/MariuszSielicki/YTD/raw/master/main/ytd.bat
 SET ytd_file=ytd.bat
 
@@ -15,17 +17,32 @@ SET ffmpeg_file=ffmpeg-20200312-675bb1f-win64-static.zip
 
 MD ytd\tmp
 
+CLS & ECHO [           ] Downloading...
 powershell -Command "(New-Object Net.WebClient).DownloadFile('%ytd_link%',        '.\ytd\%ytd_file%')"
+CLS & ECHO [-^>        ] Downloading...
 powershell -Command "(New-Object Net.WebClient).DownloadFile('%youtube_dl_link%', '.\ytd\%youtube_dl_file%')"
+CLS & ECHO [--^>       ] Downloading...
 powershell -Command "(New-Object Net.WebClient).DownloadFile('%vcredist_link%',   '.\ytd\tmp\%vcredist_file%')"
+CLS & ECHO [---^>      ] Downloading...
 powershell -Command "(New-Object Net.WebClient).DownloadFile('%phantomjs_link%',  '.\ytd\tmp\%phantomjs_file%')"
+CLS & ECHO [----^>     ] Downloading...
 powershell -Command "(New-Object Net.WebClient).DownloadFile('%ffmpeg_link%',     '.\ytd\tmp\%ffmpeg_file%')"
 
+CLS & ECHO [-----^>    ] Unzipping...
 powershell -Command "(Expand-Archive .\ytd\tmp\%phantomjs_file% .\ytd\tmp\)"
+powershell -Command "(Expand-Archive .\ytd\tmp\%ffmpeg_file% .\ytd\tmp\)"
+
+CLS & ECHO [-------^>  ] Copying...
+MOVE /Y .\ytd\tmp\%ffmpeg_file:.zip=%\bin\ffmpeg.exe .\ytd\
 MOVE /Y .\ytd\tmp\%phantomjs_file:.zip=%\bin\phantomjs.exe .\ytd\
 
-powershell -Command "(Expand-Archive .\ytd\tmp\%ffmpeg_file% .\ytd\tmp\)"
-MOVE /Y .\ytd\tmp\%ffmpeg_file:.zip=%\bin\ffmpeg.exe .\ytd\
-
+CLS & ECHO [--------^> ] Installing Microsoft Visual C++ 2010 Redistributable Package (x86)...
 .\ytd\tmp\%vcredist_file% /q
+
+CLS & ECHO [---------^>] Cleaning up...
 RD /S/Q .\ytd\tmp
+
+CLS & ECHO [---------^>] Done.
+ECHO.
+ECHO Go to ytd folder and run ytd.bat
+PAUSE >NUL
