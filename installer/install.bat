@@ -1,4 +1,4 @@
-SET ytd_link=https://github.com/MariuszSielicki/YTD/raw/master/ytd.bat
+SET ytd_link=https://github.com/MariuszSielicki/YTD/raw/master/main/ytd.bat
 SET ytd_file=ytd.bat
 
 SET youtube_dl_link=https://yt-dl.org/latest/youtube-dl.exe
