@@ -1,3 +1,4 @@
+::v 1.0
 @ECHO OFF
 SET video=""
 SET audio="-x --audio-format mp3 --audio-quality 0"

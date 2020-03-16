@@ -1,5 +1,24 @@
-ECHO OFF
-
+::v1.0
+@ECHO OFF
+ECHO -------------------------------------------------------------------------------------
+ECHO  You are about to download some software which allows to download content from
+ECHO  video-sharing services.
+ECHO.
+ECHO  I do not own rights for any of following binaries:
+ECHO  - youtube-dl.exe (https://youtube-dl.org/)
+ECHO  - vcredist_x86.exe (https://www.microsoft.com/en-US/download/details.aspx?id=5555)
+ECHO  - phantomjs.exe (https://phantomjs.org/)
+ECHO  - ffmpeg.exe (https://www.ffmpeg.org/)
+ECHO.
+ECHO  If you wish to continue, it means that you agree to terms attached to
+ECHO  above mentioned software and terms of video-sharing services you will download from.
+ECHO.
+ECHO  My work considers only batch scripts that make use of those binaries.
+ECHO  I made it just for fun. Hope it will save you some time.
+ECHO -------------------------------------------------------------------------------------
+ECHO.
+ECHO  Hit any key to start download...
+PAUSE >NUL
 SET ytd_link=https://github.com/MariuszSielicki/YTD/raw/master/main/ytd.bat
 SET ytd_file=ytd.bat
 
