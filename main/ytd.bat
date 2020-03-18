@@ -56,13 +56,26 @@ IF ERRORLEVEL 1 GOTO :opt_1
 
 :opt_4
 	ECHO.
-	::escaping "
-	SET format=%format:"=%
-	@youtube-dl.exe --no-overwrites --no-continue --restrict-filenames  %format% %url%
-	ECHO.
-	ECHO Done. Hit any key to back to options.
-	PAUSE >NUL
-	GOTO :start
+	IF %format%==%video% GOTO :video
+	IF %format%==%audio% GOTO :audio
+	:video
+		::escaping "
+		SET format=%format:"=%
+		@youtube-dl.exe --no-overwrites --no-continue --restrict-filenames  %format% %url%
+		SET format=%video%
+		ECHO.
+		ECHO Done. Hit any key to back to options.
+		PAUSE >NUL
+		GOTO :start
+	:audio
+		::escaping "
+		SET format=%format:"=%
+		@youtube-dl.exe --no-overwrites --no-continue --restrict-filenames  %format% %url%
+		SET format=%audio%
+		ECHO.
+		ECHO Done. Hit any key to back to options.
+		PAUSE >NUL
+		GOTO :start
 
 :opt_5
 	ECHO.
