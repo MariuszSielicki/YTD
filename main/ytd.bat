@@ -1,110 +1,146 @@
-::v 1.0
+::v 1.1
 @ECHO OFF
-SET video="--no-overwrites --no-continue --restrict-filenames"
-SET audio="--no-overwrites --no-continue --restrict-filenames -x --audio-format mp3 --audio-quality 0"
-SET format=%video%
+SET video="--no-overwrites --no-continue --console-title --no-warnings"
+SET audio="--no-overwrites --no-continue --console-title --no-warnings -x --audio-format mp3 --audio-quality 0"
+SET custom="-F"
+SET command=%video%
 
 ::for /f "tokens=4 delims= " %%a in ('VER') do SET winver=%%a
 ::for /f "tokens=1 delims=." %%a in ('ECHO %winver%') do SET winver=%%a
 
 :start
 CLS
-ECHO 1. URL    %url%
-ECHO 2. FORMAT %format%
-ECHO 3. CUSTOMIZE
-ECHO 4. CHECK
-ECHO 5. EXECUTE
-ECHO 6. UPDATE
-ECHO 7. EXIT
+ECHO Options
+ECHO -------
+ECHO.
+ECHO  (L)ink   %url%
+REM ECHO  (F)ormat %command%
+IF %command%==%video% ECHO  (F)ormat (x)VIDEO ( )AUDIO ( )CUSTOM
+IF %command%==%audio% ECHO  (F)ormat ( )VIDEO (x)AUDIO ( )CUSTOM
+IF %command%=="%custom%" ECHO  (F)ormat ( )VIDEO ( )AUDIO (x)CUSTOM: %command%
+ECHO  (C)ustomize
+ECHO  (V)erify
+ECHO  (E)xecute
+ECHO  (U)pdate youtube-dl
+ECHO.
+ECHO  (Q)uit
+ECHO.
+CHOICE /C LFCVEUQ
+IF ERRORLEVEL 7 GOTO quit
+IF ERRORLEVEL 6 GOTO update
+IF ERRORLEVEL 5 GOTO execute
+IF ERRORLEVEL 4 GOTO verify
+IF ERRORLEVEL 3 GOTO customize
+IF ERRORLEVEL 2 GOTO format
+IF ERRORLEVEL 1 GOTO link
 
-ECHO Select one option
-CHOICE /C 1234567
-GOTO opt_%ERRORLEVEL%
-
-:opt_1
+:link
+	CLS
+	ECHO Options ^> Link
+	ECHO --------------
 	ECHO.
-	SET /p url="Enter URL here: "
+	SET /P url="Enter URL here: "
 	::escaping &
 	SET "url=%url:&=^&%"
 	GOTO start
 
-:opt_2
+:format
+	CLS
+	ECHO Options ^> Format
+	ECHO ----------------
 	ECHO.
-	ECHO Select V for VIDEO
-	ECHO Select A for AUDIO
-	ECHO Select B to go back
+	ECHO  (V)ideo
+	ECHO  (A)udio
+	ECHO.
+	ECHO  Go (b)ack
+	ECHO.
 	CHOICE /C AVB
 	IF ERRORLEVEL 3 GOTO start
-	IF ERRORLEVEL 2 GOTO video
-	IF ERRORLEVEL 1 GOTO audio
-	:video
-		SET format=%video%
-		GOTO start
-	:audio
-		SET format=%audio%
-		GOTO start
+	IF ERRORLEVEL 2 SET command=%video%
+	IF ERRORLEVEL 1 SET command=%audio%
+	GOTO start
 
-:opt_3
+:customize
+	CLS
+	ECHO Options ^> Customize
+	ECHO -------------------
 	ECHO.
-	ECHO Select C for custom parameters
-	ECHO Select H for help
-	ECHO Select B to go back
+	ECHO  (C)ustom parameters
+	ECHO  (H)elp
+	ECHO.
+	ECHO  Go (b)ack
+	ECHO.
 	CHOICE /C CHB
 	IF ERRORLEVEL 3 GOTO start
 	IF ERRORLEVEL 2 GOTO help
 	IF ERRORLEVEL 1 GOTO custom
 	:custom
+		CLS
+		ECHO Options ^> Customize ^> Custom parameters
+		ECHO ---------------------------------------
+		ECHO.
 		SET /P custom=Enter custom parameters:
-		SET format=%custom%
+		SET command="%custom%"
 		GOTO start
 	:help
-		ECHO Viewing youtube-dl_help.txt
-		IF EXIST youtube-dl_help.txt notepad youtube-dl_help.txt 
-		IF NOT EXIST youtube-dl_help.txt ECHO Take a look and close this file to contunue. >youtube-dl_help.txt & ECHO. >>youtube-dl_help.txt & youtube-dl -help >>youtube-dl_help.txt & notepad youtube-dl_help.txt
 		CLS
-		GOTO opt_3
+		ECHO Options ^> Customize ^> Help
+		ECHO --------------------------
+		ECHO.
+		ECHO Viewing youtube-dl_help.txt.
+		ECHO.
+		ECHO Close notepad to continue...
+		IF EXIST youtube-dl_help.txt notepad youtube-dl_help.txt 
+		IF NOT EXIST youtube-dl_help.txt youtube-dl -help >youtube-dl_help.txt & notepad youtube-dl_help.txt
+		GOTO customize
 
-:opt_4
+:verify
+	CLS
+	ECHO Options ^> Verify
+	ECHO ----------------
 	ECHO.
-	ECHO  URL:    %url%
-	IF %format%==%video% ECHO  Format: (x)VIDEO ( )AUDIO ( )CUSTOM
-	IF %format%==%audio% ECHO  Format: ( )VIDEO (x)AUDIO ( )CUSTOM
-	IF %format%==%custom% ECHO  Format: ( )VIDEO ( )AUDIO (x)CUSTOM: %custom%
+	::escaping "=" in FOR loop
+	SET url_backup=%url%
+	SET "url=%url:?v=?v^%"
+	FOR /F "tokens=* usebackq" %%f IN (`youtube-dl --get-title %url%`) DO ECHO  Title:   %%f
+	
+	IF %command%==%video% ECHO  Format: (x)VIDEO ( )AUDIO ( )CUSTOM
+	IF %command%==%audio% ECHO  Format:  ( )VIDEO (x)AUDIO ( )CUSTOM
+	IF %command%=="%custom%" ECHO  Format:  ( )VIDEO ( )AUDIO (x)CUSTOM	
+	
+	SET command_backup=%command%
+	SET command=%command:"=%
+	ECHO  Command: youtube-dl %command% %url%
+	
+	SET command=%command_backup%
+	SET url=%url_backup%
+
 	ECHO.
 	ECHO Hit any key to back to options.
 	PAUSE >NUL
 	GOTO start
 
-:opt_5
+:execute
+	CLS
+	ECHO Options ^> Execute
+	ECHO -----------------
+	ECHO.	
+	::escaping "
+	SET command_backup=%command%
+	SET command=%command:"=%
+	youtube-dl.exe %command% %url%
+	
+	SET command=%command_backup%
+	
 	ECHO.
-	IF %format%==%video% GOTO video
-	IF %format%==%audio% GOTO audio
-	IF %format%==%custom% GOTO custom
-	:video
-		::escaping "
-		SET format=%format:"=%
-		youtube-dl.exe %format% %url%
-		SET format=%video%
-		GOTO finish
-	:audio
-		::escaping "
-		SET format=%format:"=%
-		@youtube-dl.exe %format% %url%
-		SET format=%audio%
-		GOTO finish
-	:custom
-		::escaping "
-		SET format=%format:"=%
-		@youtube-dl.exe %format% %url%
-		SET format=%custom%
-		GOTO finish
-	:finish	
-		ECHO.
-		ECHO Done. Hit any key to back to options.
-		PAUSE >NUL
-		GOTO start
+	ECHO Done. Hit any key to back to options.
+	PAUSE >NUL
+	GOTO start
 
-:opt_6
+:update
+	CLS
+	ECHO Options ^> Update youtube-dl
+	ECHO ---------------------------
 	ECHO.
 	@youtube-dl.exe -U
 	ECHO.
@@ -112,5 +148,5 @@ GOTO opt_%ERRORLEVEL%
 	PAUSE >NUL
 	GOTO start
 
-:opt_7
+:quit
 	EXIT
