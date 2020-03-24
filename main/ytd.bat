@@ -1,4 +1,4 @@
-::v 1.1
+::v 1.1+
 @ECHO OFF
 SET video="--no-overwrites --no-continue --console-title --no-warnings"
 SET audio="--no-overwrites --no-continue --console-title --no-warnings -x --audio-format mp3 --audio-quality 0"
@@ -56,9 +56,8 @@ IF ERRORLEVEL 1 GOTO link
 	ECHO.
 	CHOICE /C AVB
 	IF ERRORLEVEL 3 GOTO start
-	IF ERRORLEVEL 2 SET command=%video%
-	IF ERRORLEVEL 1 SET command=%audio%
-	GOTO start
+	IF ERRORLEVEL 2 SET command=%video% & GOTO start
+	IF ERRORLEVEL 1 SET command=%audio% & GOTO start
 
 :customize
 	CLS
