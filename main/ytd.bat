@@ -1,4 +1,4 @@
-::v 1.1+
+::v 1.1++
 @ECHO OFF
 SET video="--no-overwrites --no-continue --console-title --no-warnings"
 SET audio="--no-overwrites --no-continue --console-title --no-warnings -x --audio-format mp3 --audio-quality 0"
